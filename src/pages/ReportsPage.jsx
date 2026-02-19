@@ -9,8 +9,8 @@ import {
 } from 'recharts';
 import { RiBarChartLine, RiLineChartLine, RiPieChartLine, RiDownloadLine } from 'react-icons/ri';
 
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#f97316','#14b8a6','#6366f1','#a855f7','#6b7280'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316', '#14b8a6', '#6366f1', '#a855f7', '#6b7280'];
 
 const ReportsPage = () => {
   const { user } = useAuth();
@@ -31,12 +31,12 @@ const ReportsPage = () => {
 
   // Build monthly data (12 months)
   const now = new Date();
-  const monthlyData = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  const monthlyData = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     const income = incomes.filter(r => r.date?.startsWith(key)).reduce((s, r) => s + Number(r.amount), 0);
     const expense = expenses.filter(r => r.date?.startsWith(key)).reduce((s, r) => s + Number(r.amount), 0);
-    return { month: MONTHS[d.getMonth()], income, expense, savings: income - expense };
+    return { month: `${MONTHS[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`, income, expense, savings: income - expense };
   });
 
   // Category breakdown for pie
@@ -98,9 +98,8 @@ const ReportsPage = () => {
             <motion.button
               key={key}
               onClick={() => setChartType(key)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                chartType === key ? 'gradient-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${chartType === key ? 'gradient-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'
+                }`}
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             >
               <Icon /> {label}
@@ -114,7 +113,7 @@ const ReportsPage = () => {
         <motion.div className="card-glass p-6 mb-6" whileHover={{ y: -2 }}>
           <h3 className="font-bold text-foreground mb-6">
             {chartType === 'bar' ? '6-Month Income vs Expense' :
-             chartType === 'line' ? '6-Month Financial Trend' : 'Expense Category Breakdown'}
+              chartType === 'line' ? '6-Month Financial Trend' : 'Expense Category Breakdown'}
           </h3>
           {loading ? (
             <div className="h-64 bg-muted rounded-xl animate-pulse" />
@@ -127,8 +126,8 @@ const ReportsPage = () => {
                   <YAxis tick={{ fontSize: 10, fill: 'hsl(215,16%,55%)' }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={tooltipStyle} formatter={v => [`₹${v.toLocaleString('en-IN')}`, '']} />
                   <Legend />
-                  <Bar dataKey="income" name="Income" fill="#10b981" radius={[6,6,0,0]} />
-                  <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[6,6,0,0]} />
+                  <Bar dataKey="income" name="Income" fill="#10b981" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[6, 6, 0, 0]} />
                 </BarChart>
               ) : chartType === 'line' ? (
                 <LineChart data={monthlyData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
@@ -160,9 +159,9 @@ const ReportsPage = () => {
       {/* Stats summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Income', value: incomes.reduce((s,i) => s+Number(i.amount),0), color: 'text-success' },
-          { label: 'Total Expenses', value: expenses.reduce((s,e) => s+Number(e.amount),0), color: 'text-destructive' },
-          { label: 'Net Savings', value: incomes.reduce((s,i) => s+Number(i.amount),0) - expenses.reduce((s,e) => s+Number(e.amount),0), color: 'text-primary' },
+          { label: 'Total Income', value: incomes.reduce((s, i) => s + Number(i.amount), 0), color: 'text-success' },
+          { label: 'Total Expenses', value: expenses.reduce((s, e) => s + Number(e.amount), 0), color: 'text-destructive' },
+          { label: 'Net Savings', value: incomes.reduce((s, i) => s + Number(i.amount), 0) - expenses.reduce((s, e) => s + Number(e.amount), 0), color: 'text-primary' },
           { label: 'Transactions', value: incomes.length + expenses.length, color: 'text-foreground', isCount: true },
         ].map(({ label, value, color, isCount }, i) => (
           <ScrollReveal key={label} delay={i * 0.05}>

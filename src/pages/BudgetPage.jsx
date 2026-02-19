@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useToastNotify } from '../context/ToastContext';
+import { useNotifications } from '../context/NotificationContext';
 import {
   expenseService, budgetService, EXPENSE_CATEGORIES,
   formatCurrency, getCurrentMonth,
@@ -145,6 +146,7 @@ const CATEGORY_COLORS = {
 const BudgetPage = () => {
   const { user } = useAuth();
   const { addToast } = useToastNotify();
+  const { checkBudgetAlert } = useNotifications();
   const [expenses, setExpenses] = useState([]);
   const [budget, setBudget] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -161,14 +163,29 @@ const BudgetPage = () => {
       expenseService.getAll(user.id),
       budgetService.getByMonth(user.id, currentMonth),
     ]);
-    if (!exp.error) setExpenses(exp.data || []);
+    let loadedExpenses = [];
+    let loadedBudget = null;
+    let loadedCatLimits = {};
+    let loadedMonthlyLimit = 0;
+    if (!exp.error) { loadedExpenses = exp.data || []; setExpenses(loadedExpenses); }
     if (!bud.error && bud.data) {
-      setBudget(bud.data);
-      setMonthlyLimit(bud.data.monthly_limit || '');
-      setCategoryLimits(bud.data.category_limit || {});
+      loadedBudget = bud.data;
+      loadedMonthlyLimit = bud.data.monthly_limit || 0;
+      loadedCatLimits = bud.data.category_limit || {};
+      setBudget(loadedBudget);
+      setMonthlyLimit(loadedMonthlyLimit);
+      setCategoryLimits(loadedCatLimits);
     }
     setLoading(false);
-  }, [user, currentMonth]);
+
+    // Check budget alerts after data is loaded
+    const spent = loadedExpenses.reduce((s, e) => s + Number(e.amount), 0);
+    const catSpending = EXPENSE_CATEGORIES.reduce((acc, cat) => {
+      acc[cat] = loadedExpenses.filter(e => e.category === cat).reduce((s, e) => s + Number(e.amount), 0);
+      return acc;
+    }, {});
+    checkBudgetAlert(spent, Number(loadedMonthlyLimit), catSpending, loadedCatLimits);
+  }, [user, currentMonth, checkBudgetAlert]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -191,7 +208,11 @@ const BudgetPage = () => {
       category_limit: categoryLimits,
     });
     if (error) addToast(error.message, 'error');
-    else { addToast('Budget saved! 🎯', 'success'); fetchData(); setEditingLimit(false); }
+    else {
+      addToast('Budget saved! 🎯', 'success');
+      await fetchData(); // will re-check alerts with latest data
+      setEditingLimit(false);
+    }
     setSaving(false);
   };
 

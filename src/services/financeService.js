@@ -121,11 +121,23 @@ export const INCOME_SOURCES = [
   'Other',
 ];
 
-// Format currency
-export const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-IN', {
+// Supported currencies
+export const CURRENCIES = [
+  { code: 'INR', symbol: '₹', label: 'Indian Rupee', locale: 'en-IN' },
+  { code: 'USD', symbol: '$', label: 'US Dollar', locale: 'en-US' },
+  { code: 'EUR', symbol: '€', label: 'Euro', locale: 'de-DE' },
+  { code: 'GBP', symbol: '£', label: 'British Pound', locale: 'en-GB' },
+  { code: 'JPY', symbol: '¥', label: 'Japanese Yen', locale: 'ja-JP' },
+  { code: 'AUD', symbol: 'A$', label: 'Australian Dollar', locale: 'en-AU' },
+  { code: 'CAD', symbol: 'CA$', label: 'Canadian Dollar', locale: 'en-CA' },
+];
+
+// Format currency — accepts optional currency code (defaults to INR)
+export const formatCurrency = (amount, currency = 'INR') => {
+  const cur = CURRENCIES.find((c) => c.code === currency) || CURRENCIES[0];
+  return new Intl.NumberFormat(cur.locale, {
     style: 'currency',
-    currency: 'INR',
+    currency: cur.code,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount || 0);
@@ -144,4 +156,67 @@ export const formatDate = (dateStr) => {
 export const getCurrentMonth = () => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+};
+
+// ============ PROFILE SERVICES ============
+export const profileService = {
+  get: async (userId) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return { data, error };
+  },
+
+  upsert: async (profileData) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert([{ ...profileData, updated_at: new Date().toISOString() }], { onConflict: 'user_id' })
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  uploadAvatar: async (userId, file) => {
+    const ext = file.name.split('.').pop();
+    const path = `${userId}/avatar.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true });
+    if (uploadError) return { data: null, error: uploadError };
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+    return { data: data.publicUrl, error: null };
+  },
+};
+
+// ============ NOTIFICATION SERVICES ============
+export const notificationService = {
+  getUnread: async (userId) => {
+    const { data, error } = await supabase
+      .from('notification_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    return { data, error };
+  },
+
+  create: async (userId, type, message) => {
+    const { data, error } = await supabase
+      .from('notification_logs')
+      .insert([{ user_id: userId, type, message }])
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  markAllRead: async (userId) => {
+    const { error } = await supabase
+      .from('notification_logs')
+      .update({ is_read: true })
+      .eq('user_id', userId)
+      .eq('is_read', false);
+    return { error };
+  },
 };

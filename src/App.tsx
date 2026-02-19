@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ToastProvider } from "./context/ToastContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import AnimatedBackground from "./components/AnimatedBackground";
 import Navbar from "./components/Navbar";
 import AuthPage from "./pages/AuthPage";
@@ -12,10 +13,11 @@ import ExpensePage from "./pages/ExpensePage";
 import BudgetPage from "./pages/BudgetPage";
 import TransactionsPage from "./pages/TransactionsPage";
 import ReportsPage from "./pages/ReportsPage";
+import ProfilePage from "./pages/ProfilePage";
 
 const queryClient = new QueryClient();
 
-// Protected route wrapper
+// Protected route wrapper — redirects to /auth if not logged in
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) {
@@ -100,6 +102,14 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <AppShell><ProfilePage /></AppShell>
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
@@ -110,7 +120,9 @@ const App = () => (
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
-          <AppRoutes />
+          <NotificationProvider>
+            <AppRoutes />
+          </NotificationProvider>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -163,34 +163,7 @@ const IncomeCard = ({ income, onEdit, onDelete }) => (
         </div>
       </div>
 
-      {/* Action buttons on hover */}
-      <motion.div
-        className="flex gap-2 mt-3 pt-3 border-t border-border/50"
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 0, height: 0 }}
-        whileHover={{ opacity: 1, height: 'auto' }}
-      >
-        <div className="flex gap-2 mt-0 pt-0 border-t-0">
-          <motion.button
-            onClick={() => onEdit(income)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <RiEditLine /> Edit
-          </motion.button>
-          <motion.button
-            onClick={() => onDelete(income.id)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <RiDeleteBinLine /> Delete
-          </motion.button>
-        </div>
-      </motion.div>
-      
-      {/* Always visible action buttons */}
+      {/* Action buttons — visible on hover */}
       <div className="flex gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
         <motion.button
           onClick={() => onEdit(income)}
@@ -295,7 +268,7 @@ const IncomePage = () => {
       {/* Income List */}
       {loading ? (
         <div className="grid gap-4">
-          {[1,2,3].map(i => <div key={i} className="h-24 bg-muted rounded-2xl animate-pulse" />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-24 bg-muted rounded-2xl animate-pulse" />)}
         </div>
       ) : incomes.length === 0 ? (
         <ScrollReveal>
