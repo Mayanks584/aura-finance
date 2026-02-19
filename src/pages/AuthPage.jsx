@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToastNotify } from '../context/ToastContext';
-import { RiSparklingLine, RiMailLine, RiLockLine, RiEyeLine, RiEyeOffLine } from 'react-icons/ri';
+import { RiSparklingLine, RiMailLine, RiLockLine, RiEyeLine, RiEyeOffLine, RiUserLine } from 'react-icons/ri';
 
 // Animated floating label input
 const FloatingInput = ({ label, type = 'text', value, onChange, error, icon: Icon }) => {
@@ -22,13 +22,11 @@ const FloatingInput = ({ label, type = 'text', value, onChange, error, icon: Ico
           value={value}
           onChange={onChange}
           placeholder=" "
-          className={`w-full pl-11 pr-12 pt-6 pb-2 rounded-2xl border bg-white/60 backdrop-blur-sm text-foreground text-sm outline-none transition-all duration-300 ${
-            error ? 'border-destructive/60 focus:ring-destructive/20' : 'border-border focus:border-primary'
-          } focus:ring-2 focus:ring-primary/15`}
+          className={`w-full pl-11 pr-12 pt-6 pb-2 rounded-2xl border bg-white/60 backdrop-blur-sm text-foreground text-sm outline-none transition-all duration-300 ${error ? 'border-destructive/60 focus:ring-destructive/20' : 'border-border focus:border-primary'
+            } focus:ring-2 focus:ring-primary/15`}
         />
-        <label className={`absolute left-11 text-muted-foreground pointer-events-none transition-all duration-200 ${
-          value ? 'top-2 text-xs font-medium text-primary' : 'top-1/2 -translate-y-1/2 text-sm'
-        }`}>
+        <label className={`absolute left-11 text-muted-foreground pointer-events-none transition-all duration-200 ${value ? 'top-2 text-xs font-medium text-primary' : 'top-1/2 -translate-y-1/2 text-sm'
+          }`}>
           {label}
         </label>
         {isPassword && (
@@ -59,6 +57,7 @@ const FloatingInput = ({ label, type = 'text', value, onChange, error, icon: Ico
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -69,6 +68,10 @@ const AuthPage = () => {
 
   const validate = () => {
     const errs = {};
+    if (!isLogin) {
+      if (!username.trim()) errs.username = 'Username is required';
+      else if (username.trim().length < 2) errs.username = 'Username must be at least 2 characters';
+    }
     if (!email) errs.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(email)) errs.email = 'Enter a valid email';
     if (!password) errs.password = 'Password is required';
@@ -89,7 +92,7 @@ const AuthPage = () => {
         if (error) { addToast(error.message, 'error'); }
         else { addToast('Welcome back! 🎉', 'success'); navigate('/'); }
       } else {
-        const { error } = await signUp(email, password);
+        const { error } = await signUp(email, password, username.trim());
         if (error) { addToast(error.message, 'error'); }
         else { addToast('Account created! Check your email to verify.', 'success'); setIsLogin(true); }
       }
@@ -222,6 +225,26 @@ const AuthPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              <AnimatePresence>
+                {!isLogin && (
+                  <motion.div
+                    key="username-field"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <FloatingInput
+                      label="Username"
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      error={errors.username}
+                      icon={RiUserLine}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <FloatingInput
                 label="Email address"
                 type="email"
