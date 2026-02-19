@@ -153,7 +153,9 @@ const BudgetPage = () => {
   const [editingLimit, setEditingLimit] = useState(false);
   const [monthlyLimit, setMonthlyLimit] = useState('');
   const [categoryLimits, setCategoryLimits] = useState({});
+  const [savedCategoryLimits, setSavedCategoryLimits] = useState({});
   const [saving, setSaving] = useState(false);
+  const [editingCats, setEditingCats] = useState({});
 
   const currentMonth = getCurrentMonth();
 
@@ -175,6 +177,7 @@ const BudgetPage = () => {
       setBudget(loadedBudget);
       setMonthlyLimit(loadedMonthlyLimit);
       setCategoryLimits(loadedCatLimits);
+      setSavedCategoryLimits(loadedCatLimits);
     }
     setLoading(false);
 
@@ -210,7 +213,9 @@ const BudgetPage = () => {
     if (error) addToast(error.message, 'error');
     else {
       addToast('Budget saved! 🎯', 'success');
-      await fetchData(); // will re-check alerts with latest data
+      setSavedCategoryLimits({ ...categoryLimits });
+      setEditingCats({});
+      await fetchData();
       setEditingLimit(false);
     }
     setSaving(false);
@@ -345,30 +350,41 @@ const BudgetPage = () => {
             </motion.button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {EXPENSE_CATEGORIES.map(cat => (
-              <div key={cat} className="space-y-2">
-                {categoryLimits[cat] ? (
-                  <CategoryBar
-                    category={cat}
-                    spent={categorySpending[cat] || 0}
-                    limit={Number(categoryLimits[cat])}
-                    color={CATEGORY_COLORS[cat]}
-                  />
-                ) : (
-                  <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-border hover:border-primary/50 transition-all group">
-                    <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: CATEGORY_COLORS[cat] }} />
-                    <span className="text-xs text-muted-foreground flex-1">{cat}</span>
-                    <input
-                      type="number"
-                      placeholder="Set limit"
-                      value={categoryLimits[cat] || ''}
-                      onChange={e => setCategoryLimits(prev => ({ ...prev, [cat]: e.target.value }))}
-                      className="w-24 px-2 py-1 rounded-lg border border-border bg-white/60 text-xs outline-none focus:border-primary"
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+            {EXPENSE_CATEGORIES.map(cat => {
+              const isSaved = !!savedCategoryLimits[cat] && !editingCats[cat];
+              return (
+                <div key={cat} className="space-y-2">
+                  {isSaved ? (
+                    <div className="relative group">
+                      <CategoryBar
+                        category={cat}
+                        spent={categorySpending[cat] || 0}
+                        limit={Number(savedCategoryLimits[cat])}
+                        color={CATEGORY_COLORS[cat]}
+                      />
+                      <button
+                        onClick={() => setEditingCats(prev => ({ ...prev, [cat]: true }))}
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-[10px] text-muted-foreground hover:text-primary px-1.5 py-0.5 rounded bg-white/80 transition-all"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-border hover:border-primary/50 transition-all group">
+                      <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: CATEGORY_COLORS[cat] }} />
+                      <span className="text-xs text-muted-foreground flex-1">{cat}</span>
+                      <input
+                        type="number"
+                        placeholder="Set limit"
+                        value={categoryLimits[cat] || ''}
+                        onChange={e => setCategoryLimits(prev => ({ ...prev, [cat]: e.target.value }))}
+                        className="w-24 px-2 py-1 rounded-lg border border-border bg-white/60 text-xs outline-none focus:border-primary"
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </motion.div>
       </ScrollReveal>
