@@ -148,7 +148,36 @@ create policy "anon full access notification_logs" on notification_logs
   for all using (true) with check (true);
 
 
+-- ── 6. STORAGE BUCKETS ─────────────────────────────────────────
+
+-- Insert the 'avatars' bucket if it doesn't exist
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
+
+-- Temporarily open access for dev mode
+drop policy if exists "Avatar images are publicly accessible." on storage.objects;
+create policy "Avatar images are publicly accessible."
+  on storage.objects for select
+  using ( bucket_id = 'avatars' );
+
+drop policy if exists "Anyone can upload an avatar." on storage.objects;
+create policy "Anyone can upload an avatar."
+  on storage.objects for insert
+  with check ( bucket_id = 'avatars' );
+
+drop policy if exists "Anyone can update an avatar." on storage.objects;
+create policy "Anyone can update an avatar."
+  on storage.objects for update
+  with check ( bucket_id = 'avatars' );
+
+drop policy if exists "Anyone can delete an avatar." on storage.objects;
+create policy "Anyone can delete an avatar."
+  on storage.objects for delete
+  using ( bucket_id = 'avatars' );
+
+
 -- ================================================================
--- DONE. Tables: incomes, expenses, budgets, profiles, notification_logs
+-- DONE. Tables: incomes, expenses, budgets, profiles, notification_logs, storage buckets
 -- Open RLS policies applied for dev mode (auth bypassed)
 -- ================================================================
