@@ -1,73 +1,58 @@
-# Welcome to your Lovable project
+# Aura Finance
 
-## Project info
+AURA Finance is a comprehensive personal finance tracking and budgeting application designed with a premium, modern aesthetic. The application allows you to track incomes, expenses, manage budgets, and review analytics for your personal finances.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Features
 
-## How can I edit this code?
+- **Dashboard:** An overview of your financial health, recent transactions, and spending breakdowns.
+- **Transactions Management:** Add, edit, and categorize your income and expenses.
+- **Budgeting:** Set monthly budgets for different categories and get notified when you're nearing your limits.
+- **Reports & Analytics:** Visualize your financial data over 3-month periods and export data as CSV.
+- **Profile Customization:** Personalize your account with avatars, display names, and preferred currencies.
 
-There are several ways of editing your application.
+## 🛠️ Technologies Used
 
-**Use Lovable**
+This project is built with:
+- [Vite](https://vitejs.dev/) - Frontend tool
+- [React](https://reactjs.org/) - UI library
+- [Supabase](https://supabase.com/) - Backend and database
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Framer Motion](https://www.framer.com/motion/) - Animations
+- [Recharts](https://recharts.org/) - Charts
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## ⚙️ Setup & Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+Follow these steps to get the project running locally:
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+### 1. Clone the repository
+```bash
 git clone <YOUR_GIT_URL>
+cd aura-finance
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 2. Install dependencies
+Make sure you have Node.js installed, then run:
+```bash
+npm install
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 3. Setup Environment Variables
+Create a `.env` file in the root directory and add your Supabase credentials. 
+```env
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 4. Database Setup
+Go to your Supabase project dashboard, navigate to the SQL Editor, and run the contents of the `supabase_schema.sql` file located in the root directory of this repository. This will set up the necessary tables and storage buckets.
+
+### 5. Start the Development Server
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be accessible at `http://localhost:8080` (or another port depending on Vite configuration).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📝 License
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+This project is open-sourced under the MIT License.
