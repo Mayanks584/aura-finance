@@ -49,9 +49,8 @@ const MetricCard = ({ label, value, icon: Icon, gradient, change, delay = 0 }) =
               <Icon className="text-white text-lg" />
             </div>
             {change !== undefined && (
-              <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${
-                change >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
-              }`}>
+              <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${change >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
+                }`}>
                 {change >= 0 ? '↑' : '↓'} {Math.abs(change)}%
               </span>
             )}
@@ -115,9 +114,8 @@ const TransactionItem = ({ item, type }) => (
     animate={{ opacity: 1, x: 0 }}
     whileHover={{ x: 4 }}
   >
-    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm flex-shrink-0 ${
-      type === 'income' ? 'gradient-income' : 'gradient-expense'
-    }`}>
+    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm flex-shrink-0 ${type === 'income' ? 'gradient-income' : 'gradient-expense'
+      }`}>
       {type === 'income' ? '↑' : '↓'}
     </div>
     <div className="flex-1 min-w-0">
@@ -156,19 +154,19 @@ const Dashboard = () => {
 
       // Build monthly chart data
       const months = {};
-      const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const now = new Date();
-      for (let i = 5; i >= 0; i--) {
+      for (let i = 2; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
         months[key] = { month: monthNames[d.getMonth()], income: 0, expense: 0 };
       }
       (inc.data || []).forEach(r => {
-        const key = r.date?.slice(0,7);
+        const key = r.date?.slice(0, 7);
         if (months[key]) months[key].income += Number(r.amount);
       });
       (exp.data || []).forEach(r => {
-        const key = r.date?.slice(0,7);
+        const key = r.date?.slice(0, 7);
         if (months[key]) months[key].expense += Number(r.amount);
       });
       setChartData(Object.values(months));
@@ -260,7 +258,7 @@ const Dashboard = () => {
         <ScrollReveal delay={0.1} className="lg:col-span-2">
           <motion.div className="card-glass p-6 lg:col-span-2" whileHover={{ y: -2 }}>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-foreground">6-Month Trend</h3>
+              <h3 className="font-bold text-foreground">3-Month Trend</h3>
               <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">Income vs Expense</span>
             </div>
             <ResponsiveContainer width="100%" height={200}>
@@ -334,7 +332,7 @@ const Dashboard = () => {
             </div>
             {loading ? (
               <div className="space-y-3">
-                {[1,2,3,4].map(i => (
+                {[1, 2, 3, 4].map(i => (
                   <div key={i} className="h-12 bg-muted rounded-xl animate-pulse" />
                 ))}
               </div>

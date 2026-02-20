@@ -29,10 +29,10 @@ const ReportsPage = () => {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Build monthly data (12 months)
+  // Build monthly data (3 months)
   const now = new Date();
-  const monthlyData = Array.from({ length: 12 }, (_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
+  const monthlyData = Array.from({ length: 3 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (2 - i), 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     const income = incomes.filter(r => r.date?.startsWith(key)).reduce((s, r) => s + Number(r.amount), 0);
     const expense = expenses.filter(r => r.date?.startsWith(key)).reduce((s, r) => s + Number(r.amount), 0);
@@ -112,8 +112,8 @@ const ReportsPage = () => {
       <ScrollReveal delay={0.15}>
         <motion.div className="card-glass p-6 mb-6" whileHover={{ y: -2 }}>
           <h3 className="font-bold text-foreground mb-6">
-            {chartType === 'bar' ? '6-Month Income vs Expense' :
-              chartType === 'line' ? '6-Month Financial Trend' : 'Expense Category Breakdown'}
+            {chartType === 'bar' ? '3-Month Income vs Expense' :
+              chartType === 'line' ? '3-Month Financial Trend' : 'Expense Category Breakdown'}
           </h3>
           {loading ? (
             <div className="h-64 bg-muted rounded-xl animate-pulse" />
