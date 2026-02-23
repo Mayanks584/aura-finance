@@ -36,3 +36,15 @@ out
 *.njsproj
 *.sln
 *.sw?
+
+# Testing
+coverage
+.nyc_output
+
+# Caching
+.eslintcache
+.vite
+
+# Deployments
+.vercel
+.netlify
