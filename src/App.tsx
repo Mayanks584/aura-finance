@@ -12,6 +12,7 @@ import IncomePage from "./pages/IncomePage";
 import ExpensePage from "./pages/ExpensePage";
 import BudgetPage from "./pages/BudgetPage";
 import TransactionsPage from "./pages/TransactionsPage";
+import IouPage from "./pages/IouPage";
 import ReportsPage from "./pages/ReportsPage";
 import ProfilePage from "./pages/ProfilePage";
 
@@ -91,6 +92,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <AppShell><TransactionsPage /></AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ious"
+        element={
+          <ProtectedRoute>
+            <AppShell><IouPage /></AppShell>
           </ProtectedRoute>
         }
       />

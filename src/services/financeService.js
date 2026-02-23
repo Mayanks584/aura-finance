@@ -220,3 +220,39 @@ export const notificationService = {
     return { error };
   },
 };
+
+// ============ IOU SERVICES ============
+export const iouService = {
+  getAll: async (userId) => {
+    const { data, error } = await supabase
+      .from('ious')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    return { data, error };
+  },
+
+  create: async (iouData) => {
+    const { data, error } = await supabase
+      .from('ious')
+      .insert([iouData])
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  update: async (id, updates) => {
+    const { data, error } = await supabase
+      .from('ious')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  delete: async (id) => {
+    const { error } = await supabase.from('ious').delete().eq('id', id);
+    return { error };
+  },
+};

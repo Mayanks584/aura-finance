@@ -17,6 +17,7 @@ import {
   RiSparklingLine,
   RiBellLine,
   RiUserLine,
+  RiGroupLine,
 } from 'react-icons/ri';
 
 const navLinks = [
@@ -25,6 +26,7 @@ const navLinks = [
   { path: '/expenses', label: 'Expenses', icon: RiShoppingBagLine },
   { path: '/budget', label: 'Budget', icon: RiPieChartLine },
   { path: '/transactions', label: 'Transactions', icon: RiExchangeLine },
+  { path: '/ious', label: 'Splits', icon: RiGroupLine },
   { path: '/reports', label: 'Reports', icon: RiBarChartLine },
 ];
 
@@ -70,18 +72,30 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1 px-3 border-r border-border/50 mr-1">
             {navLinks.map(({ path, label, icon: Icon }) => {
               const isActive = location.pathname === path;
               return (
-                <Link key={path} to={path} className="relative">
+                <Link key={path} to={path} className="relative" title={label}>
                   <motion.div
-                    className={`nav-item flex items-center gap-1.5 ${isActive ? 'active' : ''}`}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
+                    className={`nav-item flex items-center gap-2 ${isActive ? 'active' : ''}`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <Icon className="text-base" />
-                    <span className="text-xs font-medium">{label}</span>
+                    <Icon className="text-xl" />
+                    <AnimatePresence mode="popLayout">
+                      {isActive && (
+                        <motion.span
+                          initial={{ width: 0, opacity: 0 }}
+                          animate={{ width: 'auto', opacity: 1 }}
+                          exit={{ width: 0, opacity: 0 }}
+                          className="text-sm font-semibold overflow-hidden whitespace-nowrap"
+                          transition={{ duration: 0.2 }}
+                        >
+                          {label}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
                     {isActive && (
                       <motion.div
                         layoutId="nav-indicator"
@@ -120,32 +134,29 @@ const Navbar = () => {
 
             {/* User avatar / Profile link */}
             {user && (
-              <Link to="/profile" className="hidden sm:flex items-center gap-2 group">
+              <Link to="/profile" className="hidden sm:flex items-center gap-2 group ml-1 mr-1" title={displayName || user.email}>
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
                     alt="Avatar"
-                    className="w-7 h-7 rounded-full object-cover ring-2 ring-primary/20 group-hover:ring-primary/60 transition-all"
+                    className="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20 group-hover:ring-primary/60 transition-all"
                   />
                 ) : (
-                  <div className="w-7 h-7 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-bold group-hover:scale-110 transition-transform">
+                  <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white text-sm font-bold group-hover:scale-110 transition-transform">
                     {initials}
                   </div>
                 )}
-                <span className="text-xs text-muted-foreground truncate max-w-[100px] hidden lg:block group-hover:text-foreground transition-colors">
-                  {displayName || user.email}
-                </span>
               </Link>
             )}
 
             <motion.button
               onClick={handleSignOut}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-red-50 transition-all"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              className="hidden sm:flex items-center justify-center p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-red-50 transition-all"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="Sign Out"
             >
-              <RiLogoutBoxLine className="text-base" />
-              <span className="hidden lg:block">Sign Out</span>
+              <RiLogoutBoxLine className="text-xl" />
             </motion.button>
 
             {/* Mobile menu toggle */}
@@ -197,8 +208,8 @@ const Navbar = () => {
                     >
                       <motion.div
                         className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
-                            ? 'gradient-primary text-white shadow-md'
-                            : 'text-foreground hover:bg-muted'
+                          ? 'gradient-primary text-white shadow-md'
+                          : 'text-foreground hover:bg-muted'
                           }`}
                         whileTap={{ scale: 0.97 }}
                       >
@@ -213,8 +224,8 @@ const Navbar = () => {
                 <Link to="/profile" onClick={() => setMobileOpen(false)}>
                   <motion.div
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${location.pathname === '/profile'
-                        ? 'gradient-primary text-white shadow-md'
-                        : 'text-foreground hover:bg-muted'
+                      ? 'gradient-primary text-white shadow-md'
+                      : 'text-foreground hover:bg-muted'
                       }`}
                     whileTap={{ scale: 0.97 }}
                   >

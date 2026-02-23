@@ -3,12 +3,12 @@
 -- Run in: Supabase Dashboard → SQL Editor → New Query → Run
 -- ================================================================
 
--- ── MIGRATION: drop FK constraints (dev mode — no real auth user) ─
+-- -- MIGRATION: drop FK constraints (dev mode - no real auth user) -
 alter table if exists incomes  drop constraint if exists incomes_user_id_fkey;
 alter table if exists expenses drop constraint if exists expenses_user_id_fkey;
 alter table if exists budgets  drop constraint if exists budgets_user_id_fkey;
 
--- ── FIX: rename 'category' → 'source' on incomes if needed ────────
+-- -- FIX: rename 'category' -> 'source' on incomes if needed --------
 do $$
 begin
   -- Add 'source' column if missing
@@ -29,7 +29,7 @@ begin
 end $$;
 
 
--- ── 1. INCOMES ─────────────────────────────────────────────────
+-- -- 1. INCOMES -------------------------------------------------
 create table if not exists incomes (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null,            -- no FK — dev mode uses a mock user ID
@@ -56,7 +56,7 @@ create policy "anon full access incomes" on incomes
   for all using (true) with check (true);
 
 
--- ── 2. EXPENSES ────────────────────────────────────────────────
+-- -- 2. EXPENSES ------------------------------------------------
 create table if not exists expenses (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null,            -- no FK — dev mode uses a mock user ID
@@ -83,7 +83,7 @@ create policy "anon full access expenses" on expenses
   for all using (true) with check (true);
 
 
--- ── 3. BUDGETS ─────────────────────────────────────────────────
+-- -- 3. BUDGETS -------------------------------------------------
 create table if not exists budgets (
   id              uuid primary key default gen_random_uuid(),
   user_id         uuid not null,            -- no FK — dev mode uses a mock user ID
@@ -109,7 +109,7 @@ create policy "anon full access budgets" on budgets
   for all using (true) with check (true);
 
 
--- ── 4. PROFILES ────────────────────────────────────────────────
+-- -- 4. PROFILES ------------------------------------------------
 create table if not exists profiles (
   user_id             uuid primary key,
   display_name        text,
@@ -128,7 +128,7 @@ drop policy if exists "anon full access profiles" on profiles;
 create policy "anon full access profiles" on profiles
   for all using (true) with check (true);
 
--- ── 5. NOTIFICATION LOGS ───────────────────────────────────────
+-- -- 5. NOTIFICATION LOGS ---------------------------------------
 create table if not exists notification_logs (
   id         uuid primary key default gen_random_uuid(),
   user_id    uuid not null,
@@ -148,7 +148,7 @@ create policy "anon full access notification_logs" on notification_logs
   for all using (true) with check (true);
 
 
--- ── 6. STORAGE BUCKETS ─────────────────────────────────────────
+-- -- 6. STORAGE BUCKETS -----------------------------------------
 
 -- Insert the 'avatars' bucket if it doesn't exist
 insert into storage.buckets (id, name, public)
@@ -177,7 +177,29 @@ create policy "Anyone can delete an avatar."
   using ( bucket_id = 'avatars' );
 
 
+-- -- 7. IOUS (Bill Splitter) ------------------------------------
+create table if not exists ious (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null,
+  type        text not null check (type in ('owes_me', 'i_owe')),
+  person_name text not null,
+  amount      numeric(12, 2) not null check (amount > 0),
+  description text,
+  is_settled  boolean not null default false,
+  created_at  timestamptz not null default now(),
+  settled_at  timestamptz
+);
+
+create index if not exists ious_user_id_idx on ious(user_id);
+create index if not exists ious_type_idx on ious(type);
+
+alter table ious enable row level security;
+
+drop policy if exists "anon full access ious" on ious;
+create policy "anon full access ious" on ious
+  for all using (true) with check (true);
+
 -- ================================================================
--- DONE. Tables: incomes, expenses, budgets, profiles, notification_logs, storage buckets
+-- DONE. Tables: incomes, expenses, budgets, profiles, notification_logs, ious, storage buckets
 -- Open RLS policies applied for dev mode (auth bypassed)
 -- ================================================================
