@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+  import { supabase } from '../lib/supabase';
 
 // ============ INCOME SERVICES ============
 export const incomeService = {

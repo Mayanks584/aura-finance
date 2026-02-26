@@ -15,6 +15,7 @@ import TransactionsPage from "./pages/TransactionsPage";
 import IouPage from "./pages/IouPage";
 import ReportsPage from "./pages/ReportsPage";
 import ProfilePage from "./pages/ProfilePage";
+import CalendarPage from "./pages/CalendarPage";
 
 const queryClient = new QueryClient();
 
@@ -92,6 +93,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <AppShell><TransactionsPage /></AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar"
+        element={
+          <ProtectedRoute>
+            <AppShell><CalendarPage /></AppShell>
           </ProtectedRoute>
         }
       />

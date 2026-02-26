@@ -18,6 +18,7 @@ import {
   RiBellLine,
   RiUserLine,
   RiGroupLine,
+  RiCalendarEventLine,
 } from 'react-icons/ri';
 
 const navLinks = [
@@ -26,6 +27,7 @@ const navLinks = [
   { path: '/expenses', label: 'Expenses', icon: RiShoppingBagLine },
   { path: '/budget', label: 'Budget', icon: RiPieChartLine },
   { path: '/transactions', label: 'Transactions', icon: RiExchangeLine },
+  { path: '/calendar', label: 'Calendar', icon: RiCalendarEventLine },
   { path: '/ious', label: 'Splits', icon: RiGroupLine },
   { path: '/reports', label: 'Reports', icon: RiBarChartLine },
 ];
